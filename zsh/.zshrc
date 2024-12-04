@@ -124,6 +124,7 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 fwfetest() {
+  isfwfedir || return
   local opt=$1
   local file=$2
   local example="fwfetest -d example.component.spec"
@@ -185,7 +186,7 @@ fwfetest() {
 }
 
 fwfetestreport() {
-  # isfwfedir || return
+  isfwfedir || return
   projectDir=$(pwd)
   filePath=$(find . -name "${1}*")
   chrome-browser "file://${projectDir}/coverage/src${filePath[10,-9]}.ts.html"
@@ -199,7 +200,19 @@ _fwfetest_complete() {
 }
 compctl -K _fwfetest_complete fwfetest fwfetestreport
 fwfetestclean() {
-  # isfwfedir || return
+  isfwfedir || return
   git checkout -- karma.conf.js
   git checkout -- app/test/context.js
 }
+
+isfwfedir() { 
+    if [[ -f "karma.conf.js" ]]; then
+        echo "You are in a recognized project directory."
+    else
+        echo "Error: You must be in a project directory to run this script."
+        return 1
+    fi
+}
+
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C /opt/homebrew/bin/terraform terraform
